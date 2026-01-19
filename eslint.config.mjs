@@ -64,6 +64,7 @@ export default [
 			'**/.*.js',
 			'packages/assets/*',
 			'packages/create-tldraw/cli.cjs',
+			'templates/*/public/*',
 			'**/*/vitest.config.ts',
 			'**/*/setupVitest.js',
 			'**/*/zod-locales-shim.js',
