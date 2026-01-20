@@ -6,9 +6,14 @@ import { Tldraw } from 'tldraw'
 import { getBookmarkPreview } from '../getBookmarkPreview'
 import { multiplayerAssetStore } from '../multiplayerAssetStore'
 
-// Use VITE_RIVET_ENDPOINT for Rivet Cloud, fallback to local for dev
-const rivetEndpoint = import.meta.env.VITE_RIVET_ENDPOINT || undefined
-const client = createClient(rivetEndpoint)
+// Client connects to our server which proxies to Rivet Cloud
+// The server handles the actual Rivet Cloud connection
+const rivetNamespace = import.meta.env.VITE_RIVET_NAMESPACE || 'default'
+const client = createClient({
+	// Use current origin (our server) as the endpoint for proxied requests
+	endpoint: typeof window !== 'undefined' ? window.location.origin : undefined,
+	namespace: rivetNamespace,
+})
 
 export function Room() {
 	const { roomId } = useParams<{ roomId: string }>()
