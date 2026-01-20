@@ -30,7 +30,7 @@ COPY internal/ ./internal/
 RUN yarn install
 
 # Copy config files needed for build
-COPY lazy.config.ts tsconfig.json ./
+COPY lazy.config.ts ./
 
 # Build required workspace packages
 RUN yarn build \
