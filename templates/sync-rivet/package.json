@@ -24,7 +24,7 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "yarn build:deps && tsc && vite build && vite build --mode server",
-		"build:deps": "cd ../.. && yarn lazy run build-types && yarn lazy run build-api && yarn workspace @tldraw/utils build && yarn workspace @tldraw/validate build && yarn workspace @tldraw/state build && yarn workspace @tldraw/state-react build && yarn workspace @tldraw/store build && yarn workspace @tldraw/tlschema build && yarn workspace @tldraw/editor build && yarn workspace @tldraw/tldraw build && yarn workspace @tldraw/sync-core build && yarn workspace @tldraw/sync build",
+		"build:deps": "cd ../.. && yarn lazy run build-types && yarn lazy run build-api && yarn workspace @tldraw/utils build && yarn workspace @tldraw/validate build && yarn workspace @tldraw/state build && yarn workspace @tldraw/state-react build && yarn workspace @tldraw/store build && yarn workspace @tldraw/tlschema build && yarn workspace @tldraw/editor build && node packages/tldraw/scripts/copy-css-files.mjs && yarn workspace @tldraw/tldraw build && yarn workspace @tldraw/sync-core build && yarn workspace @tldraw/sync build",
 		"lint": "yarn run -T tsx ../../internal/scripts/lint.ts",
 		"start": "srvx --static=public/ dist/server.js"
 	},
