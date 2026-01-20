@@ -26,8 +26,8 @@ COPY templates/ ./templates/
 COPY apps/ ./apps/
 COPY internal/ ./internal/
 
-# Install all dependencies
-RUN yarn install
+# Install all dependencies (skip postinstall scripts that need git)
+RUN yarn install --mode=skip-build
 
 # Copy config files needed for build
 COPY lazy.config.ts ./
