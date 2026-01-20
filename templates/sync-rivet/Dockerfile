@@ -38,26 +38,28 @@ RUN yarn run -T tsx internal/scripts/refresh-assets.ts
 RUN yarn run -T tsx internal/scripts/typecheck.ts
 
 # Run build-api to generate api/public.d.ts files (needed by build)
-RUN yarn workspace @tldraw/utils build-api
-RUN yarn workspace @tldraw/validate build-api
-RUN yarn workspace @tldraw/state build-api
-RUN yarn workspace @tldraw/store build-api
-RUN yarn workspace @tldraw/tlschema build-api
-RUN yarn workspace @tldraw/editor build-api
-RUN yarn workspace @tldraw/sync-core build-api
-RUN yarn workspace @tldraw/sync build-api
-RUN yarn workspace tldraw build-api
+RUN yarn workspace @tldraw/utils build-api && \
+    yarn workspace @tldraw/validate build-api && \
+    yarn workspace @tldraw/state build-api && \
+    yarn workspace @tldraw/state-react build-api && \
+    yarn workspace @tldraw/store build-api && \
+    yarn workspace @tldraw/tlschema build-api && \
+    yarn workspace @tldraw/editor build-api && \
+    yarn workspace @tldraw/sync-core build-api && \
+    yarn workspace @tldraw/sync build-api && \
+    yarn workspace tldraw build-api
 
 # Build the packages we need using workspace commands
-RUN yarn workspace @tldraw/utils build
-RUN yarn workspace @tldraw/validate build
-RUN yarn workspace @tldraw/state build
-RUN yarn workspace @tldraw/store build
-RUN yarn workspace @tldraw/tlschema build
-RUN yarn workspace @tldraw/editor build
-RUN yarn workspace @tldraw/sync-core build
-RUN yarn workspace @tldraw/sync build
-RUN yarn workspace tldraw build
+RUN yarn workspace @tldraw/utils build && \
+    yarn workspace @tldraw/validate build && \
+    yarn workspace @tldraw/state build && \
+    yarn workspace @tldraw/state-react build && \
+    yarn workspace @tldraw/store build && \
+    yarn workspace @tldraw/tlschema build && \
+    yarn workspace @tldraw/editor build && \
+    yarn workspace @tldraw/sync-core build && \
+    yarn workspace @tldraw/sync build && \
+    yarn workspace tldraw build
 
 # Build the sync-rivet template
 WORKDIR /app/templates/sync-rivet
