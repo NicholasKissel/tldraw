@@ -1,5 +1,7 @@
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import { serve } from '@hono/node-server'
+import { serveStatic } from '@hono/node-server/serve-static'
 import { Hono } from 'hono'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -10,9 +12,9 @@ import { registry } from './actors'
 let indexHtmlCache: string | null = null
 async function getIndexHtml() {
 	if (!indexHtmlCache) {
-		// In production, index.html is in dist/public
+		// In production, index.html is in ./public (copied from dist/public in Dockerfile)
 		// In dev, Vite handles this differently
-		const indexPath = join(process.cwd(), 'dist', 'public', 'index.html')
+		const indexPath = join(process.cwd(), 'public', 'index.html')
 		try {
 			indexHtmlCache = await readFile(indexPath, 'utf-8')
 		} catch {
@@ -126,6 +128,9 @@ app.get('/api/unfurl', async (c) => {
 	}
 })
 
+// Serve static files from public directory
+app.use('/*', serveStatic({ root: './public' }))
+
 // SPA fallback - serve index.html for any non-API, non-asset routes
 // This handles client-side routing for direct links to rooms
 app.get('*', async (c) => {
@@ -136,13 +141,19 @@ app.get('*', async (c) => {
 		return c.notFound()
 	}
 
-	// Skip static assets (have file extensions)
-	if (path.includes('.') && !path.endsWith('/')) {
-		return c.notFound()
-	}
-
 	const html = await getIndexHtml()
 	return c.html(html)
 })
+
+// Start server when running directly (not imported by vite-plugin-srvx in dev)
+const port = parseInt(process.env.PORT || '3000', 10)
+console.log(`Starting server on port ${port}...`)
+
+serve({
+	fetch: app.fetch,
+	port,
+})
+
+console.log(`Server listening on http://localhost:${port}`)
 
 export default app
