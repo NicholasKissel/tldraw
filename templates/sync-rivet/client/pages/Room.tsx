@@ -6,7 +6,9 @@ import { Tldraw } from 'tldraw'
 import { getBookmarkPreview } from '../getBookmarkPreview'
 import { multiplayerAssetStore } from '../multiplayerAssetStore'
 
-const client = createClient()
+// Use VITE_RIVET_ENDPOINT for Rivet Cloud, fallback to local for dev
+const rivetEndpoint = import.meta.env.VITE_RIVET_ENDPOINT || undefined
+const client = createClient(rivetEndpoint)
 
 export function Room() {
 	const { roomId } = useParams<{ roomId: string }>()
