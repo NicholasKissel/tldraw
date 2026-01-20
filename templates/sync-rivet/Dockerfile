@@ -29,7 +29,8 @@ COPY assets/ ./assets/
 COPY lazy.config.ts tsdoc.json ./
 
 # Install dependencies (skip postinstall that needs git for husky)
-RUN yarn install --mode=skip-build
+# YARN_CHECKSUM_BEHAVIOR=ignore handles checksum mismatches from pkg.pr.new preview packages
+RUN YARN_CHECKSUM_BEHAVIOR=ignore yarn install --mode=skip-build
 
 # Run refresh-assets manually (needed for build)
 RUN yarn run -T tsx internal/scripts/refresh-assets.ts
@@ -68,18 +69,11 @@ RUN yarn build
 # Production stage - minimal image
 FROM node:20-slim AS runner
 
-RUN corepack enable
-
 WORKDIR /app
 
 # Copy the built server and client
+# Server is fully bundled (ssr.noExternal: true) so no node_modules needed
 COPY --from=builder /app/templates/sync-rivet/dist ./dist
-
-# Copy package.json for yarn start
-COPY --from=builder /app/templates/sync-rivet/package.json ./
-
-# Copy node_modules with resolved workspace dependencies
-COPY --from=builder /app/templates/sync-rivet/node_modules ./node_modules
 
 # srvx serves static from public/ - copy built client assets there
 RUN cp -r dist/public ./public

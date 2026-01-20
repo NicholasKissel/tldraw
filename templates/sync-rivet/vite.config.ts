@@ -3,7 +3,7 @@ import { defineConfig } from 'vite'
 import srvx from 'vite-plugin-srvx'
 
 // https://vitejs.dev/config/
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
 	return {
 		plugins: [
 			react(
@@ -14,5 +14,13 @@ export default defineConfig(() => {
 			// Route API and all other routes for SPA fallback
 			...srvx({ entry: 'server/server.ts', serverRoutes: ['/api/*', '/**'] }),
 		],
+		// Bundle all dependencies into server.js for production deployment
+		// This makes the server build self-contained without needing node_modules
+		ssr:
+			mode === 'server'
+				? {
+						noExternal: true,
+					}
+				: undefined,
 	}
 })
