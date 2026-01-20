@@ -37,6 +37,17 @@ RUN yarn run -T tsx internal/scripts/refresh-assets.ts
 # Run typecheck to generate .tsbuild files
 RUN yarn run -T tsx internal/scripts/typecheck.ts
 
+# Run build-api to generate api/public.d.ts files (needed by build)
+RUN yarn workspace @tldraw/utils build-api
+RUN yarn workspace @tldraw/validate build-api
+RUN yarn workspace @tldraw/state build-api
+RUN yarn workspace @tldraw/store build-api
+RUN yarn workspace @tldraw/tlschema build-api
+RUN yarn workspace @tldraw/editor build-api
+RUN yarn workspace @tldraw/sync-core build-api
+RUN yarn workspace @tldraw/sync build-api
+RUN yarn workspace tldraw build-api
+
 # Build the packages we need using workspace commands
 RUN yarn workspace @tldraw/utils build
 RUN yarn workspace @tldraw/validate build
