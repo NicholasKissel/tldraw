@@ -1,0 +1,26 @@
+# Force Nixpacks to use our explicit build configuration
+# This prevents Railway from auto-detecting and building the wrong workspace
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "yarn"]
+
+[phases.install]
+cmds = ["corepack enable", "yarn install"]
+
+[phases.build]
+# Build only the packages needed for sync-rivet (skip docs entirely)
+cmds = [
+    "yarn workspace @tldraw/utils build",
+    "yarn workspace @tldraw/validate build",
+    "yarn workspace @tldraw/state build",
+    "yarn workspace @tldraw/store build",
+    "yarn workspace @tldraw/tlschema build",
+    "yarn workspace @tldraw/editor build",
+    "yarn workspace @tldraw/tldraw build",
+    "yarn workspace @tldraw/sync-core build",
+    "yarn workspace @tldraw/sync build",
+    "cd templates/sync-rivet && yarn build"
+]
+
+[start]
+cmd = "cd templates/sync-rivet && yarn start"
