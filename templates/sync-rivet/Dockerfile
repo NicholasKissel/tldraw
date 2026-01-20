@@ -23,6 +23,7 @@ COPY packages/ ./packages/
 COPY templates/ ./templates/
 COPY apps/ ./apps/
 COPY internal/ ./internal/
+COPY assets/ ./assets/
 
 # Copy lazyrepo config
 COPY lazy.config.ts ./
