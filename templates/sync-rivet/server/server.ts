@@ -126,9 +126,21 @@ app.get('/api/unfurl', async (c) => {
 	}
 })
 
-// SPA fallback - serve index.html for room routes (/:roomId pattern)
+// SPA fallback - serve index.html for any non-API, non-asset routes
 // This handles client-side routing for direct links to rooms
-app.get('/:roomId', async (c) => {
+app.get('*', async (c) => {
+	const path = c.req.path
+
+	// Skip API routes (already handled above)
+	if (path.startsWith('/api/')) {
+		return c.notFound()
+	}
+
+	// Skip static assets (have file extensions)
+	if (path.includes('.') && !path.endsWith('/')) {
+		return c.notFound()
+	}
+
 	const html = await getIndexHtml()
 	return c.html(html)
 })
