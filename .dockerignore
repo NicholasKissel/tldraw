@@ -68,18 +68,7 @@ apps/webdriver/www
 !.yarn/sdks
 !.yarn/versions
 
-packages/*/api
-# Include api files needed for Docker builds
-!packages/utils/api
-!packages/validate/api
-!packages/state/api
-!packages/state-react/api
-!packages/store/api
-!packages/tlschema/api
-!packages/editor/api
-!packages/sync-core/api
-!packages/sync/api
-!packages/tldraw/api
+# packages/*/api - removed to allow api files for Docker builds
 apps/examples/www/index.css
 apps/examples/www/index.js
 .tsbuild
