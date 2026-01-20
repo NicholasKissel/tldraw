@@ -1,0 +1,21 @@
+[build]
+# Build from monorepo root to access workspace dependencies
+dockerfilePath = "templates/sync-rivet/Dockerfile"
+watchPatterns = [
+  "templates/sync-rivet/**",
+  "packages/sync/**",
+  "packages/sync-core/**",
+  "packages/tldraw/**",
+  "packages/editor/**",
+  "packages/tlschema/**",
+  "packages/store/**",
+  "packages/state/**",
+  "packages/utils/**",
+  "packages/validate/**"
+]
+
+[deploy]
+healthcheckPath = "/"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3

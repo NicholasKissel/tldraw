@@ -1,0 +1,37 @@
+# Dependencies (will be installed fresh)
+node_modules
+
+# Build outputs (will be rebuilt)
+dist
+.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Development files
+*.log
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Documentation and images (not needed for build)
+*.md
+*.png
+*.svg
+arch.*
+architecture.*
+
+# Scripts not needed in build
+scripts/
