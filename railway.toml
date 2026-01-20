@@ -1,18 +1,23 @@
 [build]
-builder = "nixpacks"
-
-[build.nixpacksConfig]
-# Use Node 20 as required by the monorepo
-nixPkgs = ["nodejs_20"]
-
-# Build entire monorepo, then build the sync-rivet template
-installCmd = "corepack enable && yarn install"
-buildCmd = "yarn build && cd templates/sync-rivet && yarn build"
+# Build using Docker from monorepo root
+builder = "dockerfile"
+dockerfilePath = "templates/sync-rivet/Dockerfile"
+watchPatterns = [
+  "templates/sync-rivet/**",
+  "packages/sync/**",
+  "packages/sync-core/**",
+  "packages/tldraw/**",
+  "packages/editor/**",
+  "packages/tlschema/**",
+  "packages/store/**",
+  "packages/state/**",
+  "packages/utils/**",
+  "packages/validate/**"
+]
 
 [deploy]
-# srvx automatically uses PORT env var set by Railway
-startCommand = "cd templates/sync-rivet && yarn start"
-healthcheckPath = "/api/uploads"
+startCommand = "node dist/server.js"
+healthcheckPath = "/"
 healthcheckTimeout = 300
-restartPolicyType = "on_failure"
+restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
