@@ -37,17 +37,8 @@ RUN yarn run -T tsx internal/scripts/refresh-assets.ts
 # Run typecheck to generate .tsbuild files
 RUN yarn run -T tsx internal/scripts/typecheck.ts
 
-# Run build-api to generate api/public.d.ts files (needed by build)
-RUN yarn workspace @tldraw/utils build-api && \
-    yarn workspace @tldraw/validate build-api && \
-    yarn workspace @tldraw/state build-api && \
-    yarn workspace @tldraw/state-react build-api && \
-    yarn workspace @tldraw/store build-api && \
-    yarn workspace @tldraw/tlschema build-api && \
-    yarn workspace @tldraw/editor build-api && \
-    yarn workspace @tldraw/sync-core build-api && \
-    yarn workspace @tldraw/sync build-api && \
-    yarn workspace tldraw build-api
+# Note: api/public.d.ts files are already committed to git and copied via COPY packages/
+# The .dockerignore has been updated to include packages/*/api directories
 
 # Build the packages we need using workspace commands
 RUN yarn workspace @tldraw/utils build && \
