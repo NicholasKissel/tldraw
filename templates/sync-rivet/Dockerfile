@@ -15,35 +15,37 @@ RUN corepack enable
 WORKDIR /app
 
 # Copy everything needed for yarn install
-# The .dockerignore at repo root excludes node_modules, dist, .git, etc.
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn/patches ./.yarn/patches
 
-# Copy all workspace package.json files (yarn needs them all)
-# Using find to copy just package.json files first for better caching
+# Copy all workspace directories
 COPY packages/ ./packages/
 COPY templates/ ./templates/
 COPY apps/ ./apps/
 COPY internal/ ./internal/
 
-# Install all dependencies (skip postinstall scripts that need git)
-RUN yarn install --mode=skip-build
-
-# Copy config files needed for build
+# Copy lazyrepo config
 COPY lazy.config.ts ./
 
-# Build required workspace packages
-RUN yarn build \
-    --filter='@tldraw/state' \
-    --filter='@tldraw/utils' \
-    --filter='@tldraw/validate' \
-    --filter='@tldraw/store' \
-    --filter='@tldraw/tlschema' \
-    --filter='@tldraw/assets' \
-    --filter='@tldraw/editor' \
-    --filter='@tldraw/sync-core' \
-    --filter='@tldraw/sync' \
-    --filter='tldraw'
+# Install dependencies (skip postinstall that needs git for husky)
+RUN yarn install --mode=skip-build
+
+# Run refresh-assets manually (needed for build)
+RUN yarn run -T tsx internal/scripts/refresh-assets.ts
+
+# Run typecheck to generate .tsbuild files
+RUN yarn run -T tsx internal/scripts/typecheck.ts
+
+# Build the packages we need using workspace commands
+RUN yarn workspace @tldraw/utils build
+RUN yarn workspace @tldraw/validate build
+RUN yarn workspace @tldraw/state build
+RUN yarn workspace @tldraw/store build
+RUN yarn workspace @tldraw/tlschema build
+RUN yarn workspace @tldraw/editor build
+RUN yarn workspace @tldraw/sync-core build
+RUN yarn workspace @tldraw/sync build
+RUN yarn workspace tldraw build
 
 # Build the sync-rivet template
 WORKDIR /app/templates/sync-rivet
