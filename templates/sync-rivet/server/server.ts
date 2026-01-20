@@ -1,8 +1,27 @@
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { Hono } from 'hono'
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import { unfurl } from 'unfurl.js'
 import { registry } from './actors'
+
+// Cached index.html content for SPA fallback
+let indexHtmlCache: string | null = null
+async function getIndexHtml() {
+	if (!indexHtmlCache) {
+		// In production, index.html is in dist/public
+		// In dev, Vite handles this differently
+		const indexPath = join(process.cwd(), 'dist', 'public', 'index.html')
+		try {
+			indexHtmlCache = await readFile(indexPath, 'utf-8')
+		} catch {
+			// Fallback for dev mode
+			indexHtmlCache = '<!DOCTYPE html><html><body>Loading...</body></html>'
+		}
+	}
+	return indexHtmlCache
+}
 
 // S3 configuration from environment variables (optional)
 const S3_ACCESS_KEY = process.env.S3_ACCESS_KEY
@@ -105,6 +124,13 @@ app.get('/api/unfurl', async (c) => {
 		console.error('Unfurl error:', e)
 		return c.json({ title: '', description: '', image: '', favicon: '' })
 	}
+})
+
+// SPA fallback - serve index.html for room routes (/:roomId pattern)
+// This handles client-side routing for direct links to rooms
+app.get('/:roomId', async (c) => {
+	const html = await getIndexHtml()
+	return c.html(html)
 })
 
 export default app

@@ -11,7 +11,8 @@ export default defineConfig(() => {
 				{ tsDecorators: true }
 				/* EXCLUDE_FROM_TEMPLATE_EXPORT_END */
 			),
-			...srvx({ entry: 'server/server.ts', serverRoutes: ['/api/*'] }),
+			// Include room routes for SPA fallback (/:roomId pattern)
+			...srvx({ entry: 'server/server.ts', serverRoutes: ['/api/*', '/:roomId'] }),
 		],
 	}
 })
