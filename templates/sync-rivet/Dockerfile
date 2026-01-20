@@ -90,8 +90,5 @@ ENV PORT=3000
 
 EXPOSE 3000
 
-# Install srvx globally for the runner
-RUN npm install -g srvx
-
-# Run the production server
-CMD ["srvx", "--static=public/", "dist/server.js"]
+# Run the production server directly with node
+CMD ["node", "dist/server.js"]
