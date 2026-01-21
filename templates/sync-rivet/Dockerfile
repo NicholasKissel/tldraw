@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20-slim AS builder
+FROM node:22-slim AS builder
 
 # Install dependencies for native modules
 RUN apt-get update && apt-get install -y \
@@ -27,7 +27,7 @@ COPY templates/sync-rivet/index.html ./
 RUN npm run build
 
 # Production stage
-FROM node:20-slim AS runner
+FROM node:22-slim AS runner
 
 WORKDIR /app
 
