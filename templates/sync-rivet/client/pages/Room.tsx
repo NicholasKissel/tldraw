@@ -6,24 +6,62 @@ import { Tldraw } from 'tldraw'
 import { getBookmarkPreview } from '../getBookmarkPreview'
 import { multiplayerAssetStore } from '../multiplayerAssetStore'
 
-// rivetkit automatically detects endpoint from environment or uses /api/rivet proxy
-const client = createClient()
+// Client will be created after fetching config
+let clientPromise: ReturnType<typeof createClient> | null = null
+
+async function getClient() {
+	if (!clientPromise) {
+		// Fetch runtime config from server
+		const response = await fetch('/api/config')
+		const config = await response.json()
+
+		// Create client with endpoint from server config or use proxy
+		clientPromise = createClient({
+			endpoint: config.rivetEndpoint || undefined,
+		})
+	}
+	return clientPromise
+}
 
 export function Room() {
 	const { roomId } = useParams<{ roomId: string }>()
 	const [roomUri, setRoomUri] = useState<string | undefined>(undefined)
+	const [error, setError] = useState<string | null>(null)
 
 	useEffect(() => {
 		const loadRoomUri = async () => {
-			const gatewayUrl = await client.tldrawRoom.getOrCreate(roomId!).getGatewayUrl()
-			// Connect to root path - rivet handles websocket routing internally
-			setRoomUri(gatewayUrl)
+			try {
+				const client = await getClient()
+				const gatewayUrl = await client.tldrawRoom.getOrCreate(roomId!).getGatewayUrl()
+				setRoomUri(gatewayUrl)
+			} catch (err) {
+				console.error('Failed to connect to room:', err)
+				setError(err instanceof Error ? err.message : 'Failed to connect')
+			}
 		}
 
 		if (roomId) {
 			loadRoomUri()
 		}
 	}, [roomId])
+
+	if (error) {
+		return (
+			<RoomWrapper roomId={roomId}>
+				<div
+					style={{
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+						height: '100%',
+						color: 'red',
+					}}
+				>
+					Error: {error}
+				</div>
+			</RoomWrapper>
+		)
+	}
 
 	if (!roomUri || !roomId) {
 		return (

@@ -31,6 +31,13 @@ function getS3Client(): S3Client | null {
 
 const app = new Hono()
 
+// Runtime config endpoint for client
+app.get('/api/config', (c) => {
+	return c.json({
+		rivetEndpoint: process.env.RIVET_PUBLIC_ENDPOINT || null,
+	})
+})
+
 // Rivet actor handler
 app.all('/api/rivet/*', (c) => registry.handler(c.req.raw))
 
