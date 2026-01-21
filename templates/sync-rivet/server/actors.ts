@@ -55,7 +55,8 @@ const SNAPSHOT_KEY = new TextEncoder().encode('snapshot')
 async function loadSnapshot(kv: ActorKv) {
 	const data = await kv.get(SNAPSHOT_KEY)
 	if (data) {
-		const json = new TextDecoder().decode(data)
+		// Cast to handle type variance in rivetkit versions
+		const json = new TextDecoder().decode(data as Uint8Array)
 		return JSON.parse(json) as RoomSnapshot
 	}
 	return undefined
