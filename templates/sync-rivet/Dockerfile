@@ -34,6 +34,12 @@ WORKDIR /app
 # Install srvx globally
 RUN npm install -g srvx
 
+# Copy package.json for production dependencies
+COPY --from=builder /app/package.json ./
+
+# Install production dependencies only
+RUN npm install --omit=dev
+
 # Copy built files
 COPY --from=builder /app/dist ./dist
 
