@@ -50,13 +50,13 @@ const tldrawRoom = actor({
 	},
 })
 
-const SNAPSHOT_KEY = new TextEncoder().encode('snapshot')
+const SNAPSHOT_KEY = 'snapshot'
 
 async function loadSnapshot(kv: ActorKv) {
-	const data = await kv.get(SNAPSHOT_KEY)
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const data = await (kv as any).get(SNAPSHOT_KEY)
 	if (data) {
-		// Cast to handle type variance in rivetkit versions
-		const json = new TextDecoder().decode(data as Uint8Array)
+		const json = typeof data === 'string' ? data : new TextDecoder().decode(data)
 		return JSON.parse(json) as RoomSnapshot
 	}
 	return undefined
@@ -65,7 +65,8 @@ async function loadSnapshot(kv: ActorKv) {
 function saveSnapshot(kv: ActorKv, room: TLSocketRoom<TLRecord, void>) {
 	const snapshot = room.getCurrentSnapshot()
 	const json = JSON.stringify(snapshot)
-	return kv.put(SNAPSHOT_KEY, new TextEncoder().encode(json))
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return (kv as any).put(SNAPSHOT_KEY, json)
 }
 
 export const registry = setup({
