@@ -28,11 +28,13 @@ export function Room() {
 			// Fetch config from server to get Rivet Cloud endpoint
 			const config = await fetchConfig()
 			// Use Rivet Cloud endpoint if configured, otherwise proxy through server at /api/rivet
+			const isRivetCloud = !!config.rivetEndpoint
 			const endpoint = config.rivetEndpoint || `${window.location.origin}/api/rivet`
 
+			// Don't pass namespace separately when using Rivet Cloud - it's already in the URL
 			const client = createClient({
 				endpoint,
-				namespace: config.namespace,
+				...(isRivetCloud ? {} : { namespace: config.namespace }),
 			})
 
 			const gatewayUrl = await client.tldrawRoom.getOrCreate(roomId!).getGatewayUrl()
