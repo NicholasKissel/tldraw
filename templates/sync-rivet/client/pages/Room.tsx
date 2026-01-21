@@ -6,12 +6,12 @@ import { Tldraw } from 'tldraw'
 import { getBookmarkPreview } from '../getBookmarkPreview'
 import { multiplayerAssetStore } from '../multiplayerAssetStore'
 
-// Client connects to our server which proxies to Rivet Cloud
-// The server handles the actual Rivet Cloud connection
+// When VITE_RIVET_PUBLIC_ENDPOINT is set (Rivet Cloud), connect directly to it
+// Otherwise fall back to current origin for local development with proxied requests
 const rivetNamespace = import.meta.env.VITE_RIVET_NAMESPACE || 'default'
+const rivetEndpoint = import.meta.env.VITE_RIVET_PUBLIC_ENDPOINT
 const client = createClient({
-	// Use current origin (our server) as the endpoint for proxied requests
-	endpoint: typeof window !== 'undefined' ? window.location.origin : undefined,
+	endpoint: rivetEndpoint || (typeof window !== 'undefined' ? window.location.origin : undefined),
 	namespace: rivetNamespace,
 })
 
