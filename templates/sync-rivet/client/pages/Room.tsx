@@ -6,18 +6,8 @@ import { Tldraw } from 'tldraw'
 import { getBookmarkPreview } from '../getBookmarkPreview'
 import { multiplayerAssetStore } from '../multiplayerAssetStore'
 
-// Fetch Rivet config from server (allows runtime configuration for Rivet Cloud)
-async function fetchConfig(): Promise<{ rivetEndpoint: string | null; namespace: string }> {
-	try {
-		const res = await fetch('/api/config')
-		if (res.ok) {
-			return await res.json()
-		}
-	} catch {
-		// Fall back to defaults if config endpoint not available
-	}
-	return { rivetEndpoint: null, namespace: 'default' }
-}
+// rivetkit automatically detects endpoint from environment or uses /api/rivet proxy
+const client = createClient()
 
 export function Room() {
 	const { roomId } = useParams<{ roomId: string }>()
@@ -25,18 +15,6 @@ export function Room() {
 
 	useEffect(() => {
 		const loadRoomUri = async () => {
-			// Fetch config from server to get Rivet Cloud endpoint
-			const config = await fetchConfig()
-			// Use Rivet Cloud endpoint if configured, otherwise proxy through server at /api/rivet
-			const isRivetCloud = !!config.rivetEndpoint
-			const endpoint = config.rivetEndpoint || `${window.location.origin}/api/rivet`
-
-			// Don't pass namespace separately when using Rivet Cloud - it's already in the URL
-			const client = createClient({
-				endpoint,
-				...(isRivetCloud ? {} : { namespace: config.namespace }),
-			})
-
 			const gatewayUrl = await client.tldrawRoom.getOrCreate(roomId!).getGatewayUrl()
 			setRoomUri(`${gatewayUrl}/websocket`)
 		}
