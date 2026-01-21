@@ -71,13 +71,13 @@ FROM node:20-slim AS runner
 
 WORKDIR /app
 
+# Install srvx globally for running the server
+RUN npm install -g srvx
+
 # Copy the built server and client
 COPY --from=builder /app/templates/sync-rivet/dist ./dist
 
-# Install ws (externalized from bundle due to native dependency issues)
-RUN npm install ws
-
-# Copy static assets to public/ for the server to serve
+# Copy static assets to public/ for srvx to serve
 RUN cp -r dist/public ./public
 
 # Environment variables (override at runtime)
@@ -86,5 +86,5 @@ ENV PORT=3000
 
 EXPOSE 3000
 
-# Run the production server directly with node
-CMD ["node", "dist/server.js"]
+# Run with srvx which handles static files and the server together
+CMD ["srvx", "--static=public/", "dist/server.js"]

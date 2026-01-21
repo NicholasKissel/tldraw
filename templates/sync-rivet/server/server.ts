@@ -1,29 +1,8 @@
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { serve } from '@hono/node-server'
-import { serveStatic } from '@hono/node-server/serve-static'
 import { Hono } from 'hono'
-import { readFile } from 'node:fs/promises'
-import { join } from 'node:path'
 import { unfurl } from 'unfurl.js'
 import { registry } from './actors'
-
-// Cached index.html content for SPA fallback
-let indexHtmlCache: string | null = null
-async function getIndexHtml() {
-	if (!indexHtmlCache) {
-		// In production, index.html is in ./public (copied from dist/public in Dockerfile)
-		// In dev, Vite handles this differently
-		const indexPath = join(process.cwd(), 'public', 'index.html')
-		try {
-			indexHtmlCache = await readFile(indexPath, 'utf-8')
-		} catch {
-			// Fallback for dev mode
-			indexHtmlCache = '<!DOCTYPE html><html><body>Loading...</body></html>'
-		}
-	}
-	return indexHtmlCache
-}
 
 // S3 configuration from environment variables (optional)
 const S3_ACCESS_KEY = process.env.S3_ACCESS_KEY
@@ -54,15 +33,6 @@ const app = new Hono()
 
 // Rivet actor handler
 app.all('/api/rivet/*', (c) => registry.handler(c.req.raw))
-
-// Return Rivet public endpoint for client to connect directly to Rivet Cloud
-app.get('/api/config', (c) => {
-	const publicEndpoint = process.env.RIVET_PUBLIC_ENDPOINT
-	return c.json({
-		rivetEndpoint: publicEndpoint || null,
-		namespace: 'default',
-	})
-})
 
 // Check if S3 is configured
 app.get('/api/uploads', (c) => {
@@ -136,33 +106,5 @@ app.get('/api/unfurl', async (c) => {
 		return c.json({ title: '', description: '', image: '', favicon: '' })
 	}
 })
-
-// Serve static files from public directory
-app.use('/*', serveStatic({ root: './public' }))
-
-// SPA fallback - serve index.html for any non-API, non-asset routes
-// This handles client-side routing for direct links to rooms
-app.get('*', async (c) => {
-	const path = c.req.path
-
-	// Skip API routes (already handled above)
-	if (path.startsWith('/api/')) {
-		return c.notFound()
-	}
-
-	const html = await getIndexHtml()
-	return c.html(html)
-})
-
-// Start server when running directly (not imported by vite-plugin-srvx in dev)
-const port = parseInt(process.env.PORT || '3000', 10)
-console.log(`Starting server on port ${port}...`)
-
-serve({
-	fetch: app.fetch,
-	port,
-})
-
-console.log(`Server listening on http://localhost:${port}`)
 
 export default app

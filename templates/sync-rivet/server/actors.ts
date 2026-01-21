@@ -55,8 +55,7 @@ const SNAPSHOT_KEY = new TextEncoder().encode('snapshot')
 async function loadSnapshot(kv: ActorKv) {
 	const data = await kv.get(SNAPSHOT_KEY)
 	if (data) {
-		// Handle both string and Uint8Array return types
-		const json = typeof data === 'string' ? data : new TextDecoder().decode(data)
+		const json = new TextDecoder().decode(data)
 		return JSON.parse(json) as RoomSnapshot
 	}
 	return undefined
