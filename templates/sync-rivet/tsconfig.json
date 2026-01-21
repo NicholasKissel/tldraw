@@ -17,11 +17,5 @@
 		"noFallthroughCasesInSwitch": true,
 		"types": ["vite/client"]
 	},
-	"include": ["client", "server", "vite.config.ts"],
-	"references": [
-		{ "path": "../../packages/sync" },
-		{ "path": "../../packages/sync-core" },
-		{ "path": "../../packages/tldraw" },
-		{ "path": "../../packages/tlschema" }
-	]
+	"include": ["client", "server", "vite.config.ts"]
 }
