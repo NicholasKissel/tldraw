@@ -16,10 +16,12 @@ export default defineConfig(({ mode }) => {
 		],
 		// Bundle all dependencies into server.js for production deployment
 		// This makes the server build self-contained without needing node_modules
+		// Externalize ws and its native deps (bufferutil, utf-8-validate) which don't bundle well
 		ssr:
 			mode === 'server'
 				? {
 						noExternal: true,
+						external: ['ws', 'bufferutil', 'utf-8-validate'],
 					}
 				: undefined,
 	}

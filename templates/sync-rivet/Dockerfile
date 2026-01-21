@@ -71,8 +71,11 @@ FROM node:20-slim AS runner
 
 WORKDIR /app
 
-# Copy the built server and client (fully bundled with ssr.noExternal: true)
+# Copy the built server and client
 COPY --from=builder /app/templates/sync-rivet/dist ./dist
+
+# Install ws (externalized from bundle due to native dependency issues)
+RUN npm install ws
 
 # Copy static assets to public/ for the server to serve
 RUN cp -r dist/public ./public
