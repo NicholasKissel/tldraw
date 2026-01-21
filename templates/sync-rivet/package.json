@@ -9,23 +9,9 @@
 	"homepage": "https://tldraw.dev",
 	"license": "MIT",
 	"type": "module",
-	"tldraw_template": {
-		"repo": "tldraw/tldraw-sync-rivet",
-		"cli": {
-			"name": "Multiplayer",
-			"description": "Real-time multiplayer with a self-hosted backend.",
-			"shortDescription": "Real-time multiplayer.",
-			"order": 2
-		},
-		"scripts": {
-			"lint": null
-		}
-	},
 	"scripts": {
 		"dev": "vite",
-		"build": "yarn build:deps && tsc && vite build && vite build --mode server && mv public dist/public",
-		"build:deps": "cd ../.. && yarn lazy run build-types && yarn lazy run build-api && yarn workspace @tldraw/utils build && yarn workspace @tldraw/validate build && yarn workspace @tldraw/state build && yarn workspace @tldraw/state-react build && yarn workspace @tldraw/store build && yarn workspace @tldraw/tlschema build && yarn workspace @tldraw/editor build && node packages/tldraw/scripts/copy-css-files.mjs && yarn workspace @tldraw/tldraw build && yarn workspace @tldraw/sync-core build && yarn workspace @tldraw/sync build",
-		"lint": "yarn run -T tsx ../../internal/scripts/lint.ts",
+		"build": "tsc && vite build && vite build --mode server && mv public dist/public",
 		"start": "srvx dist/server.js"
 	},
 	"dependencies": {
@@ -34,9 +20,9 @@
 		"@hono/node-server": "^1.19.5",
 		"@hono/node-ws": "^1.2.0",
 		"@rivetkit/react": "https://pkg.pr.new/rivet-dev/rivet/@rivetkit/react@3977",
-		"@tldraw/sync": "workspace:*",
-		"@tldraw/sync-core": "workspace:*",
-		"@tldraw/tlschema": "workspace:*",
+		"@tldraw/sync": "^4.2.3",
+		"@tldraw/sync-core": "^4.2.3",
+		"@tldraw/tlschema": "^4.2.3",
 		"hono": "^4.7.0",
 		"itty-router": "^5.0.18",
 		"lodash.throttle": "^4.1.1",
@@ -45,7 +31,7 @@
 		"react-router-dom": "^6.28.2",
 		"rivetkit": "https://pkg.pr.new/rivet-dev/rivet/rivetkit@3977",
 		"srvx": "^0.10.0",
-		"tldraw": "workspace:*",
+		"tldraw": "^4.2.3",
 		"unfurl.js": "^6.4.0",
 		"ws": "^8.18.1"
 	},
