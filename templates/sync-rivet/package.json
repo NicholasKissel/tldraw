@@ -2,12 +2,6 @@
 	"name": "tldraw-sync-rivet",
 	"private": true,
 	"version": "0.0.0",
-	"author": {
-		"name": "tldraw GB Ltd.",
-		"email": "hello@tldraw.com"
-	},
-	"homepage": "https://tldraw.dev",
-	"license": "MIT",
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
@@ -24,7 +18,6 @@
 		"@tldraw/sync-core": "^4.2.3",
 		"@tldraw/tlschema": "^4.2.3",
 		"hono": "^4.7.0",
-		"itty-router": "^5.0.18",
 		"lodash.throttle": "^4.1.1",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
@@ -37,8 +30,10 @@
 	},
 	"devDependencies": {
 		"@types/lodash.throttle": "^4.1.9",
+		"@types/node": "^20.0.0",
 		"@types/react": "^18.3.18",
 		"@types/react-dom": "^18.3.5",
+		"@types/ws": "^8.5.10",
 		"@vitejs/plugin-react-swc": "^3.10.2",
 		"typescript": "^5.8.3",
 		"vite": "^5.0.0",
