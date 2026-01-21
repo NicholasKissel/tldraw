@@ -6,14 +6,18 @@ import { Tldraw } from 'tldraw'
 import { getBookmarkPreview } from '../getBookmarkPreview'
 import { multiplayerAssetStore } from '../multiplayerAssetStore'
 
-// When VITE_RIVET_PUBLIC_ENDPOINT is set (Rivet Cloud), connect directly to it
-// Otherwise fall back to current origin for local development with proxied requests
-const rivetNamespace = import.meta.env.VITE_RIVET_NAMESPACE || 'default'
-const rivetEndpoint = import.meta.env.VITE_RIVET_PUBLIC_ENDPOINT
-const client = createClient({
-	endpoint: rivetEndpoint || (typeof window !== 'undefined' ? window.location.origin : undefined),
-	namespace: rivetNamespace,
-})
+// Fetch Rivet config from server (allows runtime configuration for Rivet Cloud)
+async function fetchConfig(): Promise<{ rivetEndpoint: string | null; namespace: string }> {
+	try {
+		const res = await fetch('/api/config')
+		if (res.ok) {
+			return await res.json()
+		}
+	} catch {
+		// Fall back to defaults if config endpoint not available
+	}
+	return { rivetEndpoint: null, namespace: 'default' }
+}
 
 export function Room() {
 	const { roomId } = useParams<{ roomId: string }>()
@@ -21,6 +25,15 @@ export function Room() {
 
 	useEffect(() => {
 		const loadRoomUri = async () => {
+			// Fetch config from server to get Rivet Cloud endpoint
+			const config = await fetchConfig()
+			const endpoint = config.rivetEndpoint || window.location.origin
+
+			const client = createClient({
+				endpoint,
+				namespace: config.namespace,
+			})
+
 			const gatewayUrl = await client.tldrawRoom.getOrCreate(roomId!).getGatewayUrl()
 			setRoomUri(`${gatewayUrl}/websocket`)
 		}

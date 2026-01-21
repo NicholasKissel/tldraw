@@ -55,6 +55,15 @@ const app = new Hono()
 // Rivet actor handler
 app.all('/api/rivet/*', (c) => registry.handler(c.req.raw))
 
+// Return Rivet public endpoint for client to connect directly to Rivet Cloud
+app.get('/api/config', (c) => {
+	const publicEndpoint = process.env.RIVET_PUBLIC_ENDPOINT
+	return c.json({
+		rivetEndpoint: publicEndpoint || null,
+		namespace: 'default',
+	})
+})
+
 // Check if S3 is configured
 app.get('/api/uploads', (c) => {
 	return c.json({ available: isS3Configured() })
