@@ -27,7 +27,8 @@ export function Room() {
 		const loadRoomUri = async () => {
 			// Fetch config from server to get Rivet Cloud endpoint
 			const config = await fetchConfig()
-			const endpoint = config.rivetEndpoint || window.location.origin
+			// Use Rivet Cloud endpoint if configured, otherwise proxy through server at /api/rivet
+			const endpoint = config.rivetEndpoint || `${window.location.origin}/api/rivet`
 
 			const client = createClient({
 				endpoint,
