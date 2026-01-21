@@ -16,7 +16,8 @@ export function Room() {
 	useEffect(() => {
 		const loadRoomUri = async () => {
 			const gatewayUrl = await client.tldrawRoom.getOrCreate(roomId!).getGatewayUrl()
-			setRoomUri(`${gatewayUrl}/websocket`)
+			// Connect to root path - rivet handles websocket routing internally
+			setRoomUri(gatewayUrl)
 		}
 
 		if (roomId) {
